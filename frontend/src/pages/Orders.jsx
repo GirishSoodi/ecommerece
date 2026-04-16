@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { ShopContext } from '../context/ShopContext';
 import Title from '../components/Title';
+import { toast } from 'react-toastify';
 
 const Orders = () => {
   const { backendUrl, token, currency } = useContext(ShopContext);
@@ -10,11 +11,7 @@ const Orders = () => {
   const loadOrderData = async () => {
     try {
       if (!token) return;
-
-      const response = await axios.post(`${backendUrl}/api/order/userorders`, {}, {
-        headers: { token }
-      });
-
+      const response = await axios.post(`${backendUrl}/api/order/userorders`, {}, { headers: { token } });
       if (response.data.success) {
         const allOrdersItem = [];
         response.data.orders.forEach(order => {
@@ -23,6 +20,7 @@ const Orders = () => {
             item.payment = order.payment;
             item.paymentMethod = order.paymentMethod;
             item.date = order.date;
+            item.orderId = order._id;
             allOrdersItem.push(item);
           });
         });
@@ -30,6 +28,15 @@ const Orders = () => {
       }
     } catch (error) {
       console.error('Error loading orders:', error);
+    }
+  };
+
+  const trackOrder = async (orderId, currentStatus) => {
+    try {
+      await loadOrderData();
+      toast.info(`Order Status: ${currentStatus}`);
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -63,7 +70,7 @@ const Orders = () => {
                 <p className='min-w-2 h-2 rounded-full bg-green-500'></p>
                 <p className='text-sm md:text-base'>{item.status}</p>
               </div>
-              <button onClick={loadOrderData} className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
+              <button onClick={() => trackOrder(item.orderId, item.status)} className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
             </div>
           </div>
         ))}

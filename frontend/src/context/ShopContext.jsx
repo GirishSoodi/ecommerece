@@ -146,8 +146,19 @@ const ShopContextProvider = ({ children }) => {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (!token && storedToken) {
-      setToken(storedToken);
-      getUserCart(storedToken);
+      // validate token before using it
+      axios.post(backendUrl + "/api/cart/get", {}, { headers: { token: storedToken } })
+        .then(res => {
+          if (res.data.success === false && res.data.message === 'Not Authorized Login Again') {
+            localStorage.removeItem("token");
+          } else {
+            setToken(storedToken);
+            setCartItems(res.data.cartData || {});
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem("token");
+        });
     }
   }, []);
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'; 
 import { Routes, Route } from 'react-router-dom';
+import axios from 'axios';
 
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
@@ -18,9 +19,24 @@ const App = () => {
   const [token, setToken] = useState(localStorage.getItem('token')?localStorage.getItem('token'):'');
 
   useEffect(() => {
-    localStorage.setItem('token',token)
+    localStorage.setItem('token', token)
+  }, [token])
 
-  },[token])
+  useEffect(() => {
+    if (token) {
+      axios.post(backendUrl + '/api/order/list', {}, { headers: { token } })
+        .then(res => {
+          if (res.data.success === false) {
+            setToken('')
+            localStorage.removeItem('token')
+          }
+        })
+        .catch(() => {
+          setToken('')
+          localStorage.removeItem('token')
+        })
+    }
+  }, [])
 
   return (
     <div className='bg-gray-50 min-h-screen'>

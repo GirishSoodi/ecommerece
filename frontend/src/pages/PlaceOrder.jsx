@@ -60,18 +60,64 @@ const PlaceOrder = () => {
        }
 
        switch(method){
- 
+
         // api calls for cod
         case 'cod':
-           const response = await axios.post(backendUrl + '/api/order/place',orderData,{headers:{token}})
-           if(response.data.success){
+          const response = await axios.post(backendUrl + '/api/order/place', orderData, { headers: { token } })
+          if (response.data.success) {
             setCartItems({})
             navigate('/orders')
-           }else{
+          } else {
             toast.error(response.data.message)
-           }
-         break;
+          }
+          break;
 
+        // api calls for stripe
+        case 'stripe':
+          const responseStripe = await axios.post(backendUrl + '/api/order/stripe', orderData, { headers: { token } })
+          if (responseStripe.data.success) {
+            window.location.replace(responseStripe.data.session_url)
+          } else {
+            toast.error(responseStripe.data.message)
+          }
+          break;
+
+        // api calls for razorpay
+        case 'razorpay':
+          const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay', orderData, { headers: { token } })
+          if (responseRazorpay.data.success) {
+            const { order } = responseRazorpay.data
+            const options = {
+              key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+              amount: order.amount,
+              currency: order.currency,
+              name: 'Forever',
+              description: 'Order Payment',
+              order_id: order.id,
+              handler: async (response) => {
+                try {
+                  const { data } = await axios.post(backendUrl + '/api/order/verifyRazorpay', {
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature,
+                  }, { headers: { token } })
+                  if (data.success) {
+                    setCartItems({})
+                    navigate('/orders')
+                  } else {
+                    toast.error(data.message)
+                  }
+                } catch (error) {
+                  toast.error(error.message)
+                }
+              }
+            }
+            const rzp = new window.Razorpay(options)
+            rzp.open()
+          } else {
+            toast.error(responseRazorpay.data.message)
+          }
+          break;
 
        }
       
