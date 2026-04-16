@@ -18,6 +18,7 @@ const Product = () => {
       if(item._id === productId){
         setProductData(item)
         setImage(item.image[0])
+        window.scrollTo(0,0)
         return null;
       }
     })
@@ -65,7 +66,7 @@ const Product = () => {
           <div className='flex flex-col gap-4 my-8'>
             <p>Select Size</p>
             <div className='flex gap-2'>
-              {productData.sizes.map((item,index)=>(
+              {productData.sizes.filter(item => item !== '[' && item !== ']').map((item,index)=>(
                 <button onClick={()=>setSize(item)} className={`border py-2 px-4 bg-gray-100 ${item === size ? 'border-orange-500':''}`} key={index}>{item}</button>
               ))}
             </div>
@@ -97,7 +98,7 @@ const Product = () => {
 
         {/*-------------display relatrd products------------- */}
 
-        <RelatedProducts category={productData.category}  subCategory={productData.subCategory} />
+        <RelatedProducts category={productData.category} subCategory={productData.subCategory} id={productData._id} />
 
 
     </div>
