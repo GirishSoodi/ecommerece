@@ -21,7 +21,7 @@ import 'react-toastify/dist/ReactToastify.css'
 const App = () => {
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <div className='px-44 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
+      <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
         <ToastContainer />
         <Navbar />
         <SearchBar />

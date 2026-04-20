@@ -17,7 +17,7 @@ const LatestCollection = () => {
 
   return (
     <div className='my-10'>
-      <div className='text-center py-8 text-3x1'>
+      <div className='text-center py-8 text-3xl'>
         <Title text1={'LATEST'}  text2={'COLLECTIONS'} />
         <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
         Discover our latest collections, where timeless elegance meets modern flair. Curated with care and crafted for style, each piece is designed to elevate your look and keep you ahead of the trends. From bold new arrivals to subtle classics reimagined, this season’s collection brings a fresh perspective to your wardrobe. Explore now and find your next must-have.
